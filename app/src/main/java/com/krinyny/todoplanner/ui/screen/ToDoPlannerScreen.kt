@@ -1,6 +1,7 @@
 package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -124,10 +128,16 @@ fun TaskPlannerList(todoItems: List<ToDoTask>, onTextChange: (String) -> Unit) {
                 end = 20.dp
             )
     ) {
-        OutlinedTextField(value = searchText, onValueChange = {
-            searchText = it
-            onTextChange(searchText)
-        }, label = { Text(text = "Search item") },
+        OutlinedTextField(value = searchText,
+            onValueChange = {
+                searchText = it
+                onTextChange(searchText)
+            }, label = {
+                Text(
+                    text = "Search task",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         )
         LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
@@ -142,6 +152,9 @@ fun TaskPlannerList(todoItems: List<ToDoTask>, onTextChange: (String) -> Unit) {
 @Composable
 fun TodoTaskItem(text: String) {
     Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
         modifier = Modifier
             .padding(
                 top = 6.dp,
@@ -154,7 +167,7 @@ fun TodoTaskItem(text: String) {
         Text(
             text = text,
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 50.dp)
@@ -178,7 +191,7 @@ fun NoToDoTasks() {
         Text(
             modifier = Modifier.padding(top = 108.dp),
             text = "Press the + button to add a TODO task",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
         )
     }
@@ -187,11 +200,26 @@ fun NoToDoTasks() {
 @Composable
 fun ShowErrorDialog(errorMessage: String, showErrorDialog: MutableState<Boolean>) {
     AlertDialog(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
         onDismissRequest = { },
-        title = { Text(text = "Error") },
-        text = { Text(text = errorMessage) },
+        title = {
+            Text(
+                text = "Error",
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        text = {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
         confirmButton = {
             Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 onClick = {
                     showErrorDialog.value = false
                 }
