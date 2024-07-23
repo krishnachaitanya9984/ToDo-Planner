@@ -1,4 +1,4 @@
-package com.krinyny.todoplanner.ui
+package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -38,11 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.krinyny.todoplanner.data.ToDoTask
+import com.krinyny.todoplanner.ui.viewmodel.ToDoListViewModel
 import com.krinyny.todoplanner.ui.event.TodoListEvent
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 
@@ -57,7 +59,6 @@ fun ToDoPlannerScreen(
 
     val todoItems by viewModel.todoItems.collectAsState(emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
-
     val showErrorDialog = remember { mutableStateOf(false) }
 
 
@@ -147,11 +148,12 @@ fun TodoTaskItem(text: String) {
                 bottom = 3.dp
             )
             .wrapContentSize(align = Alignment.Center),
-        shape = RoundedCornerShape(corner = CornerSize(size = 0.dp))
+        shape = RoundedCornerShape(corner = CornerSize(size = 10.dp))
 
     ) {
         Text(
             text = text,
+            style = MaterialTheme.typography.titleLarge,
             color = Color.Black,
             modifier = Modifier
                 .fillMaxWidth()
@@ -159,7 +161,7 @@ fun TodoTaskItem(text: String) {
                 .padding(
                     start = 10.dp,
                     end = 10.dp,
-                    top = 5.dp
+                    top = 10.dp
                 )
         )
     }

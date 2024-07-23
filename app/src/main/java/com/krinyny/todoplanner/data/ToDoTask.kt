@@ -2,9 +2,9 @@ package com.krinyny.todoplanner.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.krinyny.todoplanner.util.Constants.DATABASE_TABLE
+import com.krinyny.todoplanner.util.Constants.TABLE_NAME
 
-@Entity(tableName = DATABASE_TABLE)
+@Entity(tableName = TABLE_NAME)
 data class ToDoTask(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

@@ -1,31 +1,26 @@
-package com.krinyny.todoplanner.ui
+package com.krinyny.todoplanner.ui.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krinyny.todoplanner.data.ToDoRepository
+import com.krinyny.todoplanner.data.ToDoRepositoryImpl
 import com.krinyny.todoplanner.data.ToDoTask
-import com.krinyny.todoplanner.ui.event.AddTaskEvent
 import com.krinyny.todoplanner.ui.event.TodoListEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ToDoListViewModel @Inject constructor(
-    private val repository: ToDoRepository
+    private val repository: ToDoRepositoryImpl
 ) : ViewModel() {
 
     private val _todoItems = MutableStateFlow<List<ToDoTask>>(emptyList())
     val todoItems: StateFlow<List<ToDoTask>> = _todoItems
 
-    fun onUIEvent(event : TodoListEvent) {
+    fun onUIEvent(event: TodoListEvent) {
         when (event) {
             is TodoListEvent.GetAllTasks -> getAllTasks()
             is TodoListEvent.SearchTasks -> searchTodoItems(event.searchString)
@@ -33,15 +28,15 @@ class ToDoListViewModel @Inject constructor(
     }
 
     private fun getAllTasks() {
-        viewModelScope.launch {
-            repository.getAllTasks.collect {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getAllTasks().collect {
                 _todoItems.emit(it)
             }
         }
     }
 
     private fun searchTodoItems(search: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.searchTasks(search).collect {
                 _todoItems.emit(it)
             }

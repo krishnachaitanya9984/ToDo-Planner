@@ -1,4 +1,4 @@
-package com.krinyny.todoplanner.ui
+package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -17,7 +17,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,7 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.krinyny.todoplanner.ui.viewmodel.AddToDoViewModel
 import com.krinyny.todoplanner.ui.event.AddTaskEvent
+import com.krinyny.todoplanner.ui.state.AddTaskScreenState
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 import kotlinx.coroutines.flow.collectLatest
 
@@ -41,24 +42,26 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddTaskScreen(
     navHostController: NavHostController,
-    viewModel: ToDoViewModel
+    viewModel: AddToDoViewModel
 ) {
-    AddTaskContent(navHostController,viewModel)
+    AddTaskContent(navHostController, viewModel)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskContent(navHostController: NavHostController,
-                   viewModel: ToDoViewModel) {
+fun AddTaskContent(
+    navHostController: NavHostController,
+    viewModel: AddToDoViewModel
+) {
     var isLoading = viewModel.isLoading.collectAsState().value
     val focusManager = LocalFocusManager.current
     var taskName by remember { mutableStateOf("") }
-    Log.e("KC","AddTaskContent")
+    Log.e("KC", "AddTaskContent")
     LaunchedEffect(key1 = true) {
         viewModel.screenStateFlow.collectLatest { state ->
             focusManager.clearFocus()
-            when(state) {
+            when (state) {
                 is AddTaskScreenState.GoBack -> {
                     navHostController.navigateUp()
                 }
@@ -67,7 +70,7 @@ fun AddTaskContent(navHostController: NavHostController,
                     navHostController.apply {
                         previousBackStackEntry
                             ?.savedStateHandle
-                            ?.set(ERROR_MESSAGE_KEY,state.errorMessage)
+                            ?.set(ERROR_MESSAGE_KEY, state.errorMessage)
                         navigateUp()
                     }
                 }
@@ -85,8 +88,8 @@ fun AddTaskContent(navHostController: NavHostController,
             })
         }
     ) {
-        Log.e("KC","isLoading : $isLoading")
-        if(isLoading) {
+        Log.e("KC", "isLoading : $isLoading")
+        if (isLoading) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
                     color = Color.Black,
@@ -104,7 +107,7 @@ fun AddTaskContent(navHostController: NavHostController,
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
-                    label = { Text(text = "Enter new Todo")},
+                    label = { Text(text = "Enter new Todo") },
                     value = taskName,
                     onValueChange = { taskName = it },
                     singleLine = true,
