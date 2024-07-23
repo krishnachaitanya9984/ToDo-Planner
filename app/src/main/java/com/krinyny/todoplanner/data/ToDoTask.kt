@@ -10,3 +10,5 @@ data class ToDoTask(
     val id: Int = 0,
     val taskName: String,
 )
+
+class TaskException(message: String) : Exception(message)

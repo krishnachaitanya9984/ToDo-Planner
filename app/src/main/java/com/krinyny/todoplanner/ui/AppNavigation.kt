@@ -8,11 +8,12 @@ import androidx.navigation.compose.composable
 @Composable
 fun ToDoAppNavigation(
     navHostController: NavHostController,
+    listViewModel: ToDoListViewModel,
     viewModel: ToDoViewModel
 ) {
     NavHost(navController = navHostController, startDestination = "ToDoPlannerScreen") {
         composable("ToDoPlannerScreen") {
-            ToDoPlannerScreen(navHostController, viewModel)
+            ToDoPlannerScreen(navHostController, listViewModel, it.savedStateHandle)
         }
         composable("AddTaskScreen") {
             AddTaskScreen(navHostController, viewModel)

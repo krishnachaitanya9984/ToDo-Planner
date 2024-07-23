@@ -16,13 +16,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.krinyny.todoplanner.theme.TodoPlannerTheme
 import com.krinyny.todoplanner.ui.ToDoAppNavigation
+import com.krinyny.todoplanner.ui.ToDoListViewModel
 import com.krinyny.todoplanner.ui.ToDoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
-    private val viewModel: ToDoViewModel by viewModels()
+    private val listViewModel: ToDoListViewModel by viewModels()
+    private val addViewModel: ToDoViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
             TodoPlannerTheme {
                 navController = rememberNavController()
                 ToDoAppNavigation(
-                    navController,viewModel
+                    navController,listViewModel,addViewModel
                 )
 
             }
