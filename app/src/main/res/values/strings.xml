@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">ToDoPlanner</string>
+    <string name="app_name">ToDo Planner</string>
+
+    <string name="empty_task_text">Press the + button to add a TODO task</string>
+    <string name="error_title">Error</string>
+    <string name="ok">Ok</string>
+    <string name="search_task">Search Task</string>
+    <string name="add_todo_task">Add Todo Task</string>
+    <string name="enter_new_todo">Enter new Todo</string>
+    <string name="add_todo">Add TODO</string>
 </resources>

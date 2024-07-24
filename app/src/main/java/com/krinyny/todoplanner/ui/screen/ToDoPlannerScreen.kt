@@ -39,13 +39,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.krinyny.tododb.data.ToDoTask
+import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.viewmodel.ToDoListViewModel
-import com.krinyny.todoplanner.ui.event.TodoListEvent
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -56,32 +57,24 @@ fun ToDoPlannerScreen(
     viewModel: ToDoListViewModel,
     savedStateHandle: SavedStateHandle,
 ) {
-
-    val todoItems by viewModel.todoItems.collectAsState(emptyList())
+    val todoItems by viewModel.todoList.collectAsState(emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
     val showErrorDialog = remember { mutableStateOf(false) }
 
-
     LaunchedEffect(Unit) {
-        if (searchText.isEmpty()) {
-            val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-            if (errorMessage.isNullOrEmpty()) {
-                viewModel.onUIEvent(TodoListEvent.GetAllTasks)
-            } else {
-                showErrorDialog.value = true
-            }
-        } else {
-            viewModel.onUIEvent(TodoListEvent.SearchTasks(searchText))
+        val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
+        if (!errorMessage.isNullOrEmpty()) {
+            showErrorDialog.value = true
         }
-
     }
+
 
     Scaffold(topBar = {
         TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ), title = {
-            Text("Todo Planner")
+            Text(stringResource(id = R.string.app_name))
         })
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
@@ -89,23 +82,19 @@ fun ToDoPlannerScreen(
         }, content = { Icon(Icons.Default.Add, contentDescription = "Add") })
     }) {
         if (searchText.isEmpty() && todoItems.isEmpty()) {
-            NoToDoTasks()
+            EmptyTask()
         } else {
             if (showErrorDialog.value) {
                 val message = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
                 message?.let {
-                    if(message.isNotEmpty()) {
+                    if (message.isNotEmpty()) {
                         ShowErrorDialog(errorMessage = message, showErrorDialog)
                     }
                 }
             } else {
                 TaskPlannerList(todoItems = todoItems) {
                     searchText = it
-                    if (it.isNotEmpty()) {
-                        viewModel.onUIEvent(TodoListEvent.SearchTasks(it))
-                    } else {
-                        viewModel.onUIEvent(TodoListEvent.GetAllTasks)
-                    }
+                    viewModel.onSearchTextChange(it)
                 }
             }
         }
@@ -114,7 +103,10 @@ fun ToDoPlannerScreen(
 }
 
 @Composable
-fun TaskPlannerList(todoItems: List<ToDoTask>, onTextChange: (String) -> Unit) {
+fun TaskPlannerList(
+    todoItems: List<ToDoTask>,
+    onTextChange: (String) -> Unit
+) {
     var searchText by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = Modifier
@@ -132,7 +124,7 @@ fun TaskPlannerList(todoItems: List<ToDoTask>, onTextChange: (String) -> Unit) {
                 onTextChange(searchText)
             }, label = {
                 Text(
-                    text = "Search task",
+                    text = stringResource(id = R.string.search_task),
                     color = MaterialTheme.colorScheme.primary
                 )
             },
@@ -143,6 +135,7 @@ fun TaskPlannerList(todoItems: List<ToDoTask>, onTextChange: (String) -> Unit) {
                 TodoTaskItem(text = todo.taskName)
             }
         }
+
     }
 
 }
@@ -180,7 +173,7 @@ fun TodoTaskItem(text: String) {
 }
 
 @Composable
-fun NoToDoTasks() {
+fun EmptyTask() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -188,7 +181,7 @@ fun NoToDoTasks() {
     ) {
         Text(
             modifier = Modifier.padding(top = 108.dp),
-            text = "Press the + button to add a TODO task",
+            text = stringResource(id = R.string.empty_task_text),
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
         )
@@ -202,7 +195,7 @@ fun ShowErrorDialog(errorMessage: String, showErrorDialog: MutableState<Boolean>
         onDismissRequest = { },
         title = {
             Text(
-                text = "Error",
+                text = stringResource(id = R.string.error_title),
                 color = MaterialTheme.colorScheme.primary
             )
         },
@@ -222,7 +215,7 @@ fun ShowErrorDialog(errorMessage: String, showErrorDialog: MutableState<Boolean>
                     showErrorDialog.value = false
                 }
             ) {
-                Text("OK")
+                Text(stringResource(id = R.string.ok))
             }
 
         }

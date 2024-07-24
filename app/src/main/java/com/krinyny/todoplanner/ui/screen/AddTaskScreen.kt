@@ -29,10 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.viewmodel.AddToDoViewModel
 import com.krinyny.todoplanner.ui.event.AddTaskEvent
 import com.krinyny.todoplanner.ui.state.AddTaskScreenState
@@ -55,10 +56,9 @@ fun AddTaskContent(
     navHostController: NavHostController,
     viewModel: AddToDoViewModel
 ) {
-    var isLoading = viewModel.isLoading.collectAsState().value
+    val isLoading = viewModel.isLoading.collectAsState().value
     val focusManager = LocalFocusManager.current
     var taskName by remember { mutableStateOf("") }
-    Log.e("KC", "AddTaskContent")
     LaunchedEffect(key1 = true) {
         viewModel.screenStateFlow.collectLatest { state ->
             focusManager.clearFocus()
@@ -93,7 +93,7 @@ fun AddTaskContent(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 titleContentColor = MaterialTheme.colorScheme.primary,
             ), title = {
-                Text("Add Todo Task")
+                Text(stringResource(id = R.string.add_todo_task))
             })
         }
     ) {
@@ -101,7 +101,7 @@ fun AddTaskContent(
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -116,7 +116,7 @@ fun AddTaskContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
-                    label = { Text(text = "Enter new Todo") },
+                    label = { Text(text = stringResource(id = R.string.enter_new_todo)) },
                     value = taskName,
                     onValueChange = { taskName = it },
                     singleLine = true,
@@ -134,7 +134,7 @@ fun AddTaskContent(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Add TODO")
+                    Text(stringResource(id = R.string.add_todo))
                 }
             }
         }

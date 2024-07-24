@@ -4,43 +4,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krinyny.tododb.data.ToDoRepositoryImpl
 import com.krinyny.tododb.data.ToDoTask
-import com.krinyny.todoplanner.ui.event.TodoListEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class ToDoListViewModel @Inject constructor(
-    private val repository: ToDoRepositoryImpl
+    repository: ToDoRepositoryImpl
 ) : ViewModel() {
 
-    private val _todoItems = MutableStateFlow<List<ToDoTask>>(emptyList())
-    val todoItems: StateFlow<List<ToDoTask>> = _todoItems
+    private val _searchText = MutableStateFlow("")
 
-    fun onUIEvent(event: TodoListEvent) {
-        when (event) {
-            is TodoListEvent.GetAllTasks -> getAllTasks()
-            is TodoListEvent.SearchTasks -> searchTodoItems(event.searchString)
-        }
-    }
+    private val searchTodoQuery: StateFlow<String> =
+        _searchText
+            .debounce(2000)
+            .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
-    private fun getAllTasks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllTasks().collect {
-                _todoItems.emit(it)
+    val todoList: StateFlow<List<ToDoTask>> =
+        repository.getAllTasks()
+            .combine(searchTodoQuery) { tasks, query ->
+                if (query.isEmpty()) {
+                    tasks
+                } else {
+                    tasks.filter { it.taskName.contains(query, ignoreCase = true) }
+                }
             }
-        }
-    }
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private fun searchTodoItems(search: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.searchTasks(search).collect {
-                _todoItems.emit(it)
-            }
-        }
+
+    fun onSearchTextChange(text: String) {
+        _searchText.update { text }
     }
 
 }

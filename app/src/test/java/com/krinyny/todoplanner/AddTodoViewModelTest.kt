@@ -1,6 +1,9 @@
 package com.krinyny.todoplanner
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.google.common.truth.Truth.assertThat
+import com.krinyny.tododb.data.ToDoRepositoryImpl
+import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.ui.event.AddTaskEvent
 import com.krinyny.todoplanner.ui.viewmodel.AddToDoViewModel
 import io.mockk.Runs
@@ -24,7 +27,7 @@ class AddTodoViewModelTest {
     var rule: TestRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: AddToDoViewModel
-    private val repository: com.krinyny.tododb.data.ToDoRepositoryImpl = mockk(relaxed = true)
+    private val repository: ToDoRepositoryImpl = mockk(relaxed = true)
 
     @Before
     fun setup() {
@@ -33,19 +36,30 @@ class AddTodoViewModelTest {
         viewModel = AddToDoViewModel(repository)
     }
 
+    @Test
+    fun testInitialState() {
+        assertThat(viewModel.isLoading.value).isFalse()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testAddTodoSuccess() = runTest {
         val taskName = "New task"
         coEvery { repository.addTask(any()) } just Runs
-
         viewModel.onUIEvent(AddTaskEvent.AddToDoTask(taskName))
-
-
-        // Ensure the coroutine runs
         advanceUntilIdle()
+        coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
+        assertEquals(false, viewModel.isLoading.value)
+    }
 
-        coVerify { repository.addTask(com.krinyny.tododb.data.ToDoTask(taskName = taskName)) }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testAddTodoError() = runTest {
+        val taskName = "Error"
+        coEvery { repository.addTask(any()) } just Runs
+        viewModel.onUIEvent(AddTaskEvent.AddToDoTask(taskName))
+        advanceUntilIdle()
+        coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
         assertEquals(false, viewModel.isLoading.value)
 
     }
