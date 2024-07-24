@@ -18,7 +18,5 @@ class ToDoRepositoryImpl @Inject constructor(private val todoDao: ToDoDao) : ToD
 
     }
 
-    override fun searchTasks(searchStr: String) = todoDao.searchItems(searchStr)
-
 
 }

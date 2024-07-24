@@ -7,6 +7,4 @@ interface ToDoRepository {
     fun getAllTasks(): Flow<List<ToDoTask>>
 
     suspend fun addTask(todoTask: ToDoTask)
-
-    fun searchTasks(searchStr: String): Flow<List<ToDoTask>>
 }
