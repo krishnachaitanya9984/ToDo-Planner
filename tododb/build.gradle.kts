@@ -1,6 +1,5 @@
 plugins {
     id("com.android.library")
-    id("kotlin-kapt")
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.dagger.hilt)

@@ -71,21 +71,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(libs.org.mockito.core)
-    testImplementation(libs.org.mockito.inline)
     testImplementation (libs.androidx.core.testing)
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 
-
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
 
     //navigation with compose
     implementation(libs.androidx.navigation.compose)
-
     implementation(libs.androidx.lifecycle.viewmodel)
 
 
