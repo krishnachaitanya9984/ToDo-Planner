@@ -39,13 +39,16 @@ class AddToDoViewModel @Inject constructor(
                 if (taskName.isNotEmpty()) {
                     _isLoading.emit(true)
                     repository.addTask(ToDoTask(taskName = taskName))
+                    _screenStateFlow.emit(AddTaskScreenState.ResetErrorMessage(""))
                     delay(3000)
-                    _screenStateFlow.emit(AddTaskScreenState.GoBack)
                     _isLoading.emit(false)
+                    _screenStateFlow.emit(AddTaskScreenState.GoBack)
                 }
             } catch (e: TaskException) {
+                _isLoading.emit(false)
                 _screenStateFlow.emit(AddTaskScreenState.GoBackWithErrorMessage("Failed To Add TODO"))
             } catch (e: Exception) {
+                _isLoading.emit(false)
                 _screenStateFlow.emit(AddTaskScreenState.GoBackWithErrorMessage("Something went wrong. Try again"))
             }
         }

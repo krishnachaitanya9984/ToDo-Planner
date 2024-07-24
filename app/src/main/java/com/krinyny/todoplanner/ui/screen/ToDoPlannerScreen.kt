@@ -65,10 +65,10 @@ fun ToDoPlannerScreen(
     LaunchedEffect(Unit) {
         if (searchText.isEmpty()) {
             val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-            if (!errorMessage.isNullOrEmpty()) {
-                showErrorDialog.value = true
-            } else {
+            if (errorMessage.isNullOrEmpty()) {
                 viewModel.onUIEvent(TodoListEvent.GetAllTasks)
+            } else {
+                showErrorDialog.value = true
             }
         } else {
             viewModel.onUIEvent(TodoListEvent.SearchTasks(searchText))
@@ -94,7 +94,9 @@ fun ToDoPlannerScreen(
             if (showErrorDialog.value) {
                 val message = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
                 message?.let {
-                    ShowErrorDialog(errorMessage = message, showErrorDialog)
+                    if(message.isNotEmpty()) {
+                        ShowErrorDialog(errorMessage = message, showErrorDialog)
+                    }
                 }
             } else {
                 TaskPlannerList(todoItems = todoItems) {

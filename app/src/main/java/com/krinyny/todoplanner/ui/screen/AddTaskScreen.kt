@@ -75,6 +75,14 @@ fun AddTaskContent(
                         navigateUp()
                     }
                 }
+
+                is AddTaskScreenState.ResetErrorMessage -> {
+                    navHostController.apply {
+                        previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set(ERROR_MESSAGE_KEY, "")
+                    }
+                }
             }
         }
     }
