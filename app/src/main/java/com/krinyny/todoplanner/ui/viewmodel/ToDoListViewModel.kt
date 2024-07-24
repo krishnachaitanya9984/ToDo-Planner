@@ -2,8 +2,8 @@ package com.krinyny.todoplanner.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krinyny.todoplanner.data.ToDoRepositoryImpl
-import com.krinyny.todoplanner.data.ToDoTask
+import com.krinyny.tododb.data.ToDoRepositoryImpl
+import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.ui.event.TodoListEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

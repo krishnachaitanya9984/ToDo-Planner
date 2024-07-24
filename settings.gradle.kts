@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ToDoPlanner"
 include(":app")
+include(":tododb")

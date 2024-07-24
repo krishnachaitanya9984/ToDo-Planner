@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.androidx.room)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
@@ -51,14 +50,11 @@ android {
         }
     }
 
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
-
 }
 
 dependencies {
 
+    implementation(project(":tododb"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -83,11 +79,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 
-    implementation(libs.androidx.room)
-    kapt(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-
-    implementation(libs.androidx.datastore)
 
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)

@@ -1,4 +1,4 @@
-package com.krinyny.todoplanner.data
+package com.krinyny.tododb.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -1,9 +1,9 @@
-package com.krinyny.todoplanner.di
+package com.krinyny.tododb.di
 
 import android.content.Context
 import androidx.room.Room
-import com.krinyny.todoplanner.data.ToDoDatabase
-import com.krinyny.todoplanner.util.Constants.DATABASE_NAME
+import com.krinyny.tododb.DatabaseConstants.DATABASE_NAME
+import com.krinyny.tododb.data.ToDoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

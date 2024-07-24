@@ -1,4 +1,4 @@
-package com.krinyny.todoplanner.data
+package com.krinyny.tododb.data
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow

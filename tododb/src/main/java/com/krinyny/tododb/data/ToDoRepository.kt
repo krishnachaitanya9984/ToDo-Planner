@@ -1,4 +1,4 @@
-package com.krinyny.todoplanner.data
+package com.krinyny.tododb.data
 
 import kotlinx.coroutines.flow.Flow
 
