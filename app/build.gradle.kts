@@ -80,7 +80,6 @@ dependencies {
     testImplementation (libs.androidx.core.testing)
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
-
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 
