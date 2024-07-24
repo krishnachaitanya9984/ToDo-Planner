@@ -97,7 +97,6 @@ fun AddTaskContent(
             })
         }
     ) {
-        Log.e("KC", "isLoading : $isLoading")
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
@@ -132,7 +131,8 @@ fun AddTaskContent(
                     modifier = Modifier.height(40.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primary)
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text(stringResource(id = R.string.add_todo))
                 }
