@@ -1,5 +1,6 @@
 package com.krinyny.todoplanner.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krinyny.tododb.data.TaskException
@@ -10,16 +11,14 @@ import com.krinyny.todoplanner.util.Constants.LOADING_DELAY
 import com.krinyny.todoplanner.util.Constants.SEARCH_DELAY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,8 +28,14 @@ class ToDoTasksViewModel @Inject constructor(
     private val repository: ToDoRepositoryImpl
 ) : ViewModel() {
 
+    private var _todoTasks: MutableStateFlow<List<ToDoTask>> = MutableStateFlow(emptyList())
+    val todoTasks = _todoTasks.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
 
     private val _screenStateFlow = MutableSharedFlow<AddTaskScreenState>()
     val screenStateFlow = _screenStateFlow.asSharedFlow()
@@ -38,25 +43,40 @@ class ToDoTasksViewModel @Inject constructor(
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
-    private val searchTodoQuery: StateFlow<String> =
-        _searchText
-            .debounce(SEARCH_DELAY)
-            .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
-    val todoList: StateFlow<List<ToDoTask>> =
-        repository.getAllTasks()
-            .combine(searchTodoQuery) { tasks, query ->
-                if (query.isEmpty()) {
-                    tasks
-                } else {
-                    tasks.filter { it.taskName.contains(query, ignoreCase = true) }
-                }
-            }
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-
+    @OptIn(FlowPreview::class)
     fun onSearchTextChange(text: String) {
         _searchText.update { text }
+        viewModelScope.launch {
+            _isSearching.value = true
+            _searchText
+                .debounce(SEARCH_DELAY)
+                .collect {
+                    repository.getAllTasks()
+                        .catch { Log.e("ToDoTasksViewModel","exception occurred while searching")}
+                        .collect { tasks ->
+                            _isSearching.value = false
+                            if (text.isEmpty()) {
+                                _todoTasks.value = tasks
+                            } else {
+                                _todoTasks.value =
+                                    tasks.filter { it.taskName.contains(text, ignoreCase = true) }
+                            }
+
+                        }
+                }
+
+        }
+    }
+
+    fun getAllTasks() {
+        viewModelScope.launch {
+            repository.getAllTasks()
+                .catch { Log.e("ToDoTasksViewModel","exception while getting todos")}
+                .collect { tasks ->
+                    _todoTasks.value = tasks
+                }
+        }
     }
 
 

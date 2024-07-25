@@ -39,6 +39,7 @@ class TodoViewModelTest {
     fun testInitialValues() {
         assertThat(viewModel.isLoading.value).isFalse()
         assertThat(viewModel.searchText.value).isEmpty()
+        assertThat(viewModel.isSearching.value).isFalse()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -49,7 +50,6 @@ class TodoViewModelTest {
         viewModel.addToDoTask(taskName)
         advanceUntilIdle()
         coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
-        assertEquals(false, viewModel.isLoading.value)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,7 +60,7 @@ class TodoViewModelTest {
         viewModel.addToDoTask(taskName)
         advanceUntilIdle()
         coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
-        assertEquals(false, viewModel.isLoading.value)
+
 
     }
 

@@ -2,6 +2,7 @@ package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,15 +59,17 @@ fun ToDoPlannerScreen(
     viewModel: ToDoTasksViewModel,
     savedStateHandle: SavedStateHandle,
 ) {
-    val todoItems by viewModel.todoList.collectAsState(emptyList())
+    val todoItems by viewModel.todoTasks.collectAsState(emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
     val showErrorDialog = remember { mutableStateOf(false) }
+    val isSearching = viewModel.isSearching.collectAsState().value
 
     LaunchedEffect(Unit) {
         val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
         if (!errorMessage.isNullOrEmpty()) {
             showErrorDialog.value = true
         }
+        viewModel.getAllTasks()
     }
 
 
@@ -92,7 +96,7 @@ fun ToDoPlannerScreen(
                     }
                 }
             } else {
-                TaskPlannerList(todoItems = todoItems) {
+                TaskPlannerList(todoItems = todoItems, isSearching) {
                     searchText = it
                     viewModel.onSearchTextChange(it)
                 }
@@ -105,6 +109,7 @@ fun ToDoPlannerScreen(
 @Composable
 fun TaskPlannerList(
     todoItems: List<ToDoTask>,
+    isSearching : Boolean,
     onTextChange: (String) -> Unit
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -130,12 +135,21 @@ fun TaskPlannerList(
             },
             modifier = Modifier.fillMaxWidth()
         )
-        LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
-            items(todoItems) { todo ->
-                TodoTaskItem(text = todo.taskName)
+        if(isSearching) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                        .padding(top = 20.dp)
+                )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+                items(todoItems) { todo ->
+                    TodoTaskItem(text = todo.taskName)
+                }
             }
         }
-
     }
 
 }
