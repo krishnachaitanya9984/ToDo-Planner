@@ -1,7 +1,6 @@
 package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,27 +33,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.krinyny.todoplanner.R
-import com.krinyny.todoplanner.ui.viewmodel.AddToDoViewModel
-import com.krinyny.todoplanner.ui.event.AddTaskEvent
 import com.krinyny.todoplanner.ui.state.AddTaskScreenState
+import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 import kotlinx.coroutines.flow.collectLatest
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Composable
-fun AddTaskScreen(
-    navHostController: NavHostController,
-    viewModel: AddToDoViewModel
-) {
-    AddTaskContent(navHostController, viewModel)
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskContent(
+fun AddTaskScreen(
     navHostController: NavHostController,
-    viewModel: AddToDoViewModel
+    viewModel: ToDoTasksViewModel
 ) {
     val isLoading = viewModel.isLoading.collectAsState().value
     val focusManager = LocalFocusManager.current
@@ -127,7 +116,7 @@ fun AddTaskContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { viewModel.onUIEvent(AddTaskEvent.AddToDoTask(taskName)) },
+                    onClick = { viewModel.addToDoTask(taskName) },
                     modifier = Modifier.height(40.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,

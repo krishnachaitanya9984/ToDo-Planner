@@ -46,7 +46,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.R
-import com.krinyny.todoplanner.ui.viewmodel.ToDoListViewModel
+import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,7 +54,7 @@ import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 @Composable
 fun ToDoPlannerScreen(
     navHostController: NavHostController,
-    viewModel: ToDoListViewModel,
+    viewModel: ToDoTasksViewModel,
     savedStateHandle: SavedStateHandle,
 ) {
     val todoItems by viewModel.todoList.collectAsState(emptyList())

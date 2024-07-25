@@ -15,6 +15,4 @@ interface ToDoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addTask(toDoTask: ToDoTask)
 
-    @Query("SELECT * FROM todo_planner_table WHERE taskName LIKE '%' || :search || '%'")
-    fun searchItems(search: String): Flow<List<ToDoTask>>
 }
