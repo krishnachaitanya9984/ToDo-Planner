@@ -60,8 +60,27 @@ class TodoViewModelTest {
         viewModel.addToDoTask(taskName)
         advanceUntilIdle()
         coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
+        assertThat(viewModel.isLoading.value).isTrue()
 
+    }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testGetEmptyTasks() = runTest {
+        coEvery { repository.getAllTasks() } returns flowOf(emptyList())
+        viewModel.getAllTasks()
+        advanceUntilIdle()
+        assertThat(viewModel.todoTasks.value).isEmpty()
+
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testGetAllTasksSuccess() = runTest {
+        coEvery { repository.getAllTasks() } returns flowOf(TodoTasks.getTasks())
+        viewModel.getAllTasks()
+        advanceUntilIdle()
+        assertThat(viewModel.todoTasks.value).isNotEmpty()
     }
 
 
