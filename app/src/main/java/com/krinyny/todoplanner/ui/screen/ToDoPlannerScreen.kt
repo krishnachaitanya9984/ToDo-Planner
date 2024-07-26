@@ -61,13 +61,13 @@ fun ToDoPlannerScreen(
 ) {
     val todoItems by viewModel.todoTasks.collectAsState(emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
-    val showErrorDialog = remember { mutableStateOf(false) }
+    var showErrorDialog by rememberSaveable { mutableStateOf(false) }
     val isSearching = viewModel.isSearching.collectAsState().value
 
     LaunchedEffect(Unit) {
         val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
         if (!errorMessage.isNullOrEmpty()) {
-            showErrorDialog.value = true
+            showErrorDialog = true
         }
         viewModel.getAllTasks()
     }
@@ -88,11 +88,14 @@ fun ToDoPlannerScreen(
         if (searchText.isEmpty() && todoItems.isEmpty()) {
             EmptyTask()
         } else {
-            if (showErrorDialog.value) {
+            if (showErrorDialog) {
                 val message = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
                 message?.let {
                     if (message.isNotEmpty()) {
-                        ShowErrorDialog(errorMessage = message, showErrorDialog)
+                        ShowErrorDialog(errorMessage = message) {
+                            savedStateHandle.set(ERROR_MESSAGE_KEY,"")
+                            showErrorDialog = false
+                        }
                     }
                 }
             } else {
@@ -203,7 +206,8 @@ fun EmptyTask() {
 }
 
 @Composable
-fun ShowErrorDialog(errorMessage: String, showErrorDialog: MutableState<Boolean>) {
+fun ShowErrorDialog(errorMessage: String,
+                    clearShowErrorDialog: () -> Unit) {
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         onDismissRequest = { },
@@ -226,7 +230,7 @@ fun ShowErrorDialog(errorMessage: String, showErrorDialog: MutableState<Boolean>
                     contentColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 onClick = {
-                    showErrorDialog.value = false
+                    clearShowErrorDialog()
                 }
             ) {
                 Text(stringResource(id = R.string.ok))
