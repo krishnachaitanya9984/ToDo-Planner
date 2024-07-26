@@ -3,7 +3,10 @@ package com.krinyny.tododb.di
 import android.content.Context
 import androidx.room.Room
 import com.krinyny.tododb.DatabaseConstants.DATABASE_NAME
+import com.krinyny.tododb.data.ToDoDao
 import com.krinyny.tododb.data.ToDoDatabase
+import com.krinyny.tododb.data.ToDoRepository
+import com.krinyny.tododb.data.ToDoRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +34,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideDAO(database: ToDoDatabase) = database.toDoDao()
+
+    @Provides
+    fun provideToDoRepository(dao: ToDoDao): ToDoRepository {
+        return ToDoRepositoryImpl(dao)
+    }
 }

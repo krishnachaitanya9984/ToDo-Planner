@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krinyny.tododb.data.TaskException
+import com.krinyny.tododb.data.ToDoRepository
 import com.krinyny.tododb.data.ToDoRepositoryImpl
 import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.ui.state.AddTaskScreenState
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ToDoTasksViewModel @Inject constructor(
-    private val repository: ToDoRepositoryImpl
+    private val repository: ToDoRepository
 ) : ViewModel() {
 
     private var _todoTasks: MutableStateFlow<List<ToDoTask>> = MutableStateFlow(emptyList())
