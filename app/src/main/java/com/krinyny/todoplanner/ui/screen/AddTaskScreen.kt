@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.state.AddTaskScreenState
@@ -43,7 +44,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddTaskScreen(
     navHostController: NavHostController,
-    viewModel: ToDoTasksViewModel
+    viewModel: ToDoTasksViewModel = hiltViewModel()
 ) {
     val isLoading = viewModel.isLoading.collectAsState().value
     val focusManager = LocalFocusManager.current

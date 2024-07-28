@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.krinyny.tododb.data.ToDoTask
@@ -54,8 +55,8 @@ import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
 @Composable
 fun ToDoPlannerScreen(
     navHostController: NavHostController,
-    viewModel: ToDoTasksViewModel,
     savedStateHandle: SavedStateHandle,
+    viewModel: ToDoTasksViewModel = hiltViewModel()
 ) {
     val todoItems by viewModel.todoList.collectAsState(emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
