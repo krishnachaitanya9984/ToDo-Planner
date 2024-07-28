@@ -2,6 +2,7 @@ package com.krinyny.todoplanner.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +50,7 @@ import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
+import androidx.compose.material3.CircularProgressIndicator as CircularProgressIndicator1
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,8 +61,10 @@ fun ToDoPlannerScreen(
     viewModel: ToDoTasksViewModel = hiltViewModel()
 ) {
     val todoItems by viewModel.todoList.collectAsState(emptyList())
+    val isSearching by viewModel.isSearching.collectAsState(false)
     var searchText by rememberSaveable { mutableStateOf("") }
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
@@ -96,7 +100,7 @@ fun ToDoPlannerScreen(
                     }
                 }
             } else {
-                TaskPlannerList(todoItems = todoItems) {
+                TaskPlannerList(todoItems = todoItems, isSearching) {
                     searchText = it
                     viewModel.onSearchTextChange(it)
                 }
@@ -109,6 +113,7 @@ fun ToDoPlannerScreen(
 @Composable
 fun TaskPlannerList(
     todoItems: List<ToDoTask>,
+    isSearching: Boolean,
     onTextChange: (String) -> Unit
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -134,11 +139,22 @@ fun TaskPlannerList(
             },
             modifier = Modifier.fillMaxWidth()
         )
-        LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
-            items(todoItems) { todo ->
-                TodoTaskItem(text = todo.taskName)
+        if(isSearching) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator1(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                        .padding(top = 20.dp)
+                )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.padding(top = 20.dp)) {
+                items(todoItems) { todo ->
+                    TodoTaskItem(text = todo.taskName)
+                }
             }
         }
+
 
     }
 

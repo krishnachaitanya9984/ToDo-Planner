@@ -35,6 +35,9 @@ class ToDoTasksViewModel @Inject constructor(
     private val _screenStateFlow = MutableSharedFlow<AddTaskScreenState>()
     val screenStateFlow = _screenStateFlow.asSharedFlow()
 
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
+
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
@@ -46,6 +49,7 @@ class ToDoTasksViewModel @Inject constructor(
     val todoList: StateFlow<List<ToDoTask>> =
         repository.getAllTasks()
             .combine(searchTodoQuery) { tasks, query ->
+                _isSearching.value = false
                 if (query.isEmpty()) {
                     tasks
                 } else {
@@ -56,6 +60,7 @@ class ToDoTasksViewModel @Inject constructor(
 
 
     fun onSearchTextChange(text: String) {
+        _isSearching.value = true
         _searchText.update { text }
     }
 
