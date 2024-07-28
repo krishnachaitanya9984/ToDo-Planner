@@ -55,8 +55,8 @@ import androidx.compose.material3.CircularProgressIndicator as CircularProgressI
 @Composable
 fun ToDoPlannerScreen(
     navHostController: NavHostController,
-    viewModel: ToDoTasksViewModel,
     savedStateHandle: SavedStateHandle,
+    viewModel: ToDoTasksViewModel = hiltViewModel()
 ) {
     val todoItems by viewModel.todoList.collectAsState(emptyList())
     val isSearching by viewModel.isSearching.collectAsState(false)

@@ -30,6 +30,7 @@ class TodoViewModelTest {
     private lateinit var viewModel: ToDoTasksViewModel
     private val repository: ToDoRepositoryImpl = mockk(relaxed = true)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
