@@ -31,11 +31,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,8 +65,8 @@ fun ToDoPlannerScreen(
 
 
     LaunchedEffect(Unit) {
-        val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-        if (!errorMessage.isNullOrEmpty()) {
+        val errorMessageId: Int? = savedStateHandle.get<Int>(ERROR_MESSAGE_KEY)
+        errorMessageId?.let {
             showErrorDialog = true
         }
     }
@@ -90,13 +88,11 @@ fun ToDoPlannerScreen(
             EmptyTask()
         } else {
             if (showErrorDialog) {
-                val message = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-                message?.let {
-                    if (message.isNotEmpty()) {
-                        ShowErrorDialog(errorMessage = message) {
-                            savedStateHandle[ERROR_MESSAGE_KEY] = ""
-                            showErrorDialog = false
-                        }
+                val messageId: Int? = savedStateHandle.get<Int>(ERROR_MESSAGE_KEY)
+                messageId?.let {
+                    ShowErrorDialog(errorMessage = stringResource(id = messageId)) {
+                        savedStateHandle[ERROR_MESSAGE_KEY] = null
+                        showErrorDialog = false
                     }
                 }
             } else {
@@ -139,11 +135,12 @@ fun TaskPlannerList(
             },
             modifier = Modifier.fillMaxWidth()
         )
-        if(isSearching) {
+        if (isSearching) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator1(
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
                         .padding(top = 20.dp)
                 )
             }
@@ -209,8 +206,10 @@ fun EmptyTask() {
 }
 
 @Composable
-fun ShowErrorDialog(errorMessage: String,
-                    clearErrorDialog: () -> Unit) {
+fun ShowErrorDialog(
+    errorMessage: String,
+    clearErrorDialog: () -> Unit
+) {
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         onDismissRequest = { },

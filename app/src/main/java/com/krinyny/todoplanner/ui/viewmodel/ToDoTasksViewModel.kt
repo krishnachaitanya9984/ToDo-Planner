@@ -2,9 +2,10 @@ package com.krinyny.todoplanner.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krinyny.tododb.data.TaskException
+import com.krinyny.tododb.DatabaseConstants.ERROR_TASK_NAME
 import com.krinyny.tododb.data.ToDoRepositoryImpl
 import com.krinyny.tododb.data.ToDoTask
+import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.state.AddTaskScreenState
 import com.krinyny.todoplanner.util.Constants.LOADING_DELAY
 import com.krinyny.todoplanner.util.Constants.SEARCH_DELAY
@@ -67,22 +68,19 @@ class ToDoTasksViewModel @Inject constructor(
 
     fun addToDoTask(taskName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                if (taskName.isNotEmpty()) {
+            if (taskName.isNotEmpty()) {
+                if (taskName.trim().equals(ERROR_TASK_NAME, ignoreCase = true)) {
+                    _screenStateFlow.emit(AddTaskScreenState.GoBackWithErrorMessage(R.string.error_todo_message))
+                } else {
                     _isLoading.emit(true)
                     repository.addTask(ToDoTask(taskName = taskName))
-                    _screenStateFlow.emit(AddTaskScreenState.ResetErrorMessage(""))
                     delay(LOADING_DELAY)
                     _isLoading.emit(false)
                     _screenStateFlow.emit(AddTaskScreenState.GoBack)
                 }
-            } catch (e: TaskException) {
-                _isLoading.emit(false)
-                _screenStateFlow.emit(AddTaskScreenState.GoBackWithErrorMessage(e.message.toString()))
-            } catch (e: Exception) {
-                _isLoading.emit(false)
-                _screenStateFlow.emit(AddTaskScreenState.GoBackWithErrorMessage("Something went wrong. Try again"))
+
             }
+
         }
     }
 

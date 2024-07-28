@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.krinyny.todoplanner.ui.screen.AddTaskScreen
 import com.krinyny.todoplanner.ui.screen.ToDoPlannerScreen
-import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import com.krinyny.todoplanner.util.Constants.ADD_TASK_SCREEN
 import com.krinyny.todoplanner.util.Constants.TODO_LIST_SCREEN
 
