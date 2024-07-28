@@ -78,6 +78,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
 
     implementation(libs.dagger.hilt)
+    implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.dagger.hilt.compiler)
 
     //navigation with compose

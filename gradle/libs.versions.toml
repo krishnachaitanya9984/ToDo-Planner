@@ -12,6 +12,7 @@ composeBom = "2024.05.00"
 mockk = "1.12.0"
 room_version = "2.6.1"
 hiltVersion = "2.51.1"
+androidxHiltNavigationCompose = "1.0.0"
 nav_version = "2.7.7"
 truth = "1.4.2"
 uiTestJunit4Android = "1.6.7"
@@ -43,6 +44,7 @@ androidx-room-compiler = {group = "androidx.room", name = "room-compiler", versi
 androidx-room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room_version"}
 dagger-hilt = {group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion"}
 dagger-hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion"}
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version"}
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 androidx-lifecycle-viewmodel = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodelCompose"}

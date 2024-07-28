@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.krinyny.tododb.data.ToDoRepositoryImpl
 import com.krinyny.tododb.data.ToDoTask
+import com.krinyny.todoplanner.ui.state.AddTaskScreenState
 import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -13,6 +14,7 @@ import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.Before
@@ -38,8 +40,15 @@ class TodoViewModelTest {
     @Test
     fun testInitialValues() {
         assertThat(viewModel.isLoading.value).isFalse()
-        assertThat(viewModel.searchText.value).isEmpty()
         assertThat(viewModel.isSearching.value).isFalse()
+        assertThat(viewModel.searchText.value).isEmpty()
+    }
+
+    @Test
+    fun testOnSearchTextChange() {
+        viewModel.onSearchTextChange("search")
+        assertThat(viewModel.isSearching.value).isTrue()
+        assertThat(viewModel.searchText.value).isEqualTo("search")
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,6 +59,9 @@ class TodoViewModelTest {
         viewModel.addToDoTask(taskName)
         advanceUntilIdle()
         coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
+        assertEquals(true, viewModel.isLoading.value)
+        assertThat(viewModel.screenStateFlow.first()).isEqualTo(AddTaskScreenState.GoBack)
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,28 +71,12 @@ class TodoViewModelTest {
         coEvery { repository.addTask(any()) } just Runs
         viewModel.addToDoTask(taskName)
         advanceUntilIdle()
-        coVerify { repository.addTask(ToDoTask(taskName = taskName)) }
-        assertThat(viewModel.isLoading.value).isTrue()
+        assertThat(viewModel.screenStateFlow.first()).isEqualTo(
+            AddTaskScreenState.GoBackWithErrorMessage(
+                R.string.error_todo_message
+            )
+        )
 
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testGetEmptyTasks() = runTest {
-        coEvery { repository.getAllTasks() } returns flowOf(emptyList())
-        viewModel.getAllTasks()
-        advanceUntilIdle()
-        assertThat(viewModel.todoTasks.value).isEmpty()
-
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testGetAllTasksSuccess() = runTest {
-        coEvery { repository.getAllTasks() } returns flowOf(TodoTasks.getTasks())
-        viewModel.getAllTasks()
-        advanceUntilIdle()
-        assertThat(viewModel.todoTasks.value).isNotEmpty()
     }
 
 

@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,11 +31,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,12 +41,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.krinyny.tododb.data.ToDoTask
 import com.krinyny.todoplanner.R
 import com.krinyny.todoplanner.ui.viewmodel.ToDoTasksViewModel
 import com.krinyny.todoplanner.util.Constants.ERROR_MESSAGE_KEY
+import androidx.compose.material3.CircularProgressIndicator as CircularProgressIndicator1
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,17 +58,17 @@ fun ToDoPlannerScreen(
     viewModel: ToDoTasksViewModel,
     savedStateHandle: SavedStateHandle,
 ) {
-    val todoItems by viewModel.todoTasks.collectAsState(emptyList())
+    val todoItems by viewModel.todoList.collectAsState(emptyList())
+    val isSearching by viewModel.isSearching.collectAsState(false)
     var searchText by rememberSaveable { mutableStateOf("") }
     var showErrorDialog by rememberSaveable { mutableStateOf(false) }
-    val isSearching = viewModel.isSearching.collectAsState().value
+
 
     LaunchedEffect(Unit) {
-        val errorMessage = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-        if (!errorMessage.isNullOrEmpty()) {
+        val errorMessageId: Int? = savedStateHandle.get<Int>(ERROR_MESSAGE_KEY)
+        errorMessageId?.let {
             showErrorDialog = true
         }
-        viewModel.getAllTasks()
     }
 
 
@@ -89,13 +88,11 @@ fun ToDoPlannerScreen(
             EmptyTask()
         } else {
             if (showErrorDialog) {
-                val message = savedStateHandle.get<String>(ERROR_MESSAGE_KEY)
-                message?.let {
-                    if (message.isNotEmpty()) {
-                        ShowErrorDialog(errorMessage = message) {
-                            savedStateHandle.set(ERROR_MESSAGE_KEY,"")
-                            showErrorDialog = false
-                        }
+                val messageId: Int? = savedStateHandle.get<Int>(ERROR_MESSAGE_KEY)
+                messageId?.let {
+                    ShowErrorDialog(errorMessage = stringResource(id = messageId)) {
+                        savedStateHandle[ERROR_MESSAGE_KEY] = null
+                        showErrorDialog = false
                     }
                 }
             } else {
@@ -112,7 +109,7 @@ fun ToDoPlannerScreen(
 @Composable
 fun TaskPlannerList(
     todoItems: List<ToDoTask>,
-    isSearching : Boolean,
+    isSearching: Boolean,
     onTextChange: (String) -> Unit
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -138,11 +135,12 @@ fun TaskPlannerList(
             },
             modifier = Modifier.fillMaxWidth()
         )
-        if(isSearching) {
+        if (isSearching) {
             Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
+                CircularProgressIndicator1(
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
                         .padding(top = 20.dp)
                 )
             }
@@ -153,6 +151,8 @@ fun TaskPlannerList(
                 }
             }
         }
+
+
     }
 
 }
@@ -206,8 +206,10 @@ fun EmptyTask() {
 }
 
 @Composable
-fun ShowErrorDialog(errorMessage: String,
-                    clearShowErrorDialog: () -> Unit) {
+fun ShowErrorDialog(
+    errorMessage: String,
+    clearErrorDialog: () -> Unit
+) {
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         onDismissRequest = { },
@@ -230,7 +232,7 @@ fun ShowErrorDialog(errorMessage: String,
                     contentColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 onClick = {
-                    clearShowErrorDialog()
+                    clearErrorDialog()
                 }
             ) {
                 Text(stringResource(id = R.string.ok))
